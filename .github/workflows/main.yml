@@ -23,5 +23,8 @@ jobs:
         with:
           version: '6.3.0'
           
+      - name: install stuff
+        run: pnpm i
+      
       - name: build stuff
         run: pnpm build
