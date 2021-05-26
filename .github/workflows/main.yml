@@ -22,15 +22,13 @@ jobs:
         with:
           version: '6.3.0'
           
-      - name: install stuff
-        run: pnpm i
-      
-      - name: build stuff
-        run: pnpm build
-        
+      - name: Install & Build Dependencies
+        run: |
+          pnpm i
+          pnpm build        
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.3
         with:
           branch: gh-pages
-          folder: build
+          folder: docs
