@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '15.x'
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: '6.3.0'
+          
+      - name: install stuff
+        run: pnpm i
+      
+      - name: build stuff
+        run: pnpm build
