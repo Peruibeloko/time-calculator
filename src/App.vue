@@ -1,14 +1,23 @@
 <template>
-  <main>
+  <div class="container">
     <header class="centered">
       <h1 class="site-title">Time Calculator</h1>
     </header>
-    <entry-list @onEvaluate="updateResult" />
-    <div class="hbar"></div>
-    <section>
-      <h1 class="result" v-if="result">Thats {{ result }}</h1>
-    </section>
-  </main>
+    <main>
+      <entry-list @onEvaluate="updateResult" />
+      <div class="hbar"></div>
+      <section>
+        <h1 class="result" v-if="result">Thats {{ result }}</h1>
+      </section>
+    </main>
+    <footer class="footer">
+      <a href="https://github.com/peruibeloko/time-calculator" class="source-link"
+        >Check the source here!</a
+      >
+      <span class="separator">·</span>
+      <a href="https://github.com/peruibeloko" class="source-link">Check my other projects here!</a>
+    </footer>
+  </div>
 </template>
 
 <script>
@@ -66,7 +75,7 @@ export default {
 :root {
   --dark: hsl(0, 0%, 10%);
   --light: hsl(41, 100%, 89%);
-  --darken-overlay: rgba(0, 0, 0, 0.274);
+  --darken-overlay: rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -79,19 +88,22 @@ h1 {
   text-align: center;
 }
 
-header h1 {
-  font-size: 3rem;
-}
-
 #app {
   background-color: var(--dark);
   color: var(--light);
-  height: 100vh;
   font-family: 'KoHo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(min-content, max-content) 1fr minmax(min-content, max-content);
+  min-height: 100vh;  
 }
 
 .site-title {
   padding: 5rem 0;
+  font-size: 3rem;
 }
 
 .result {
@@ -99,10 +111,26 @@ header h1 {
 }
 
 .hbar {
-  background-color: rgba(0, 0, 0, 0.274);
+  background-color: var(--darken-overlay);
   width: 80%;
   height: 0.5rem;
   border-radius: 0.5rem;
   margin: 0 auto;
+}
+
+.footer {
+  padding: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.source-link {
+  color: var(--light);
+}
+
+.separator {
+  padding: 0 1rem;
+  font-size: 2rem;
 }
 </style>

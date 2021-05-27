@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
@@ -20,12 +20,12 @@ jobs:
       - name: Setup PNPM
         uses: pnpm/action-setup@v2.0.1
         with:
-          version: '6.3.0'
-          
+          version: '6.4.0'
+
       - name: Install & Build Dependencies
         run: |
           pnpm i
-          pnpm build        
+          pnpm build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.3
