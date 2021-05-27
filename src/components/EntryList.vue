@@ -1,7 +1,7 @@
 <template>
   <form ref="entryListForm">
     <fieldset class="entry" v-for="(entry, setIndex) in entryList" :key="setIndex">
-      <custom-input
+      <entry
         v-model="entryList[setIndex][key]"
         v-for="(value, key, fieldIndex) of entry"
         :key="key + '-' + setIndex"
@@ -18,11 +18,11 @@
 </template>
 
 <script>
-import CustomInput from './CustomInput.vue';
+import Entry from './Entry.vue';
 
 export default {
   name: 'EntryList',
-  components: { CustomInput },
+  components: { Entry },
   emits: ['onEvaluate'],
   data() {
     return {
@@ -128,9 +128,8 @@ fieldset {
 }
 
 .entry {
-  width: 40%;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   padding: 1.5rem 0;
 }
