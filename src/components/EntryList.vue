@@ -1,33 +1,33 @@
 <template>
   <form ref="entryListForm">
-    <fieldset class="entry" v-for="(entry, setIndex) in entryList" :key="setIndex">
-      <entry
-        v-model="entryList[setIndex][key]"
-        v-for="(value, key, fieldIndex) of entry"
-        :key="key + '-' + setIndex"
-        :label="labels[key]"
+    <fieldset class="entry" v-for="(entry, entryIdx) in entryList" :key="entryIdx">
+      <Field
+        :key="fieldName + '-' + entryIdx"
+        :label="labels[fieldName]"
+        :fieldId="fieldName + '-' + entryIdx"
+        v-model="entryList[entryIdx][fieldName]"
+        v-for="(value, fieldName, fieldIndex) of entry"
+        @onSetSign="setSign($event, `${fieldName}-${entryIdx}`)"
+        @onMove="moveCursor($event[0], $event[1], `${fieldName}-${entryIdx}`)"
         @onEvaluate="confirm"
-        @onUp="moveCursor(setIndex, fieldIndex + 1, 'up')"
-        @onDown="moveCursor(setIndex, fieldIndex + 1, 'down')"
-        @onLeft="$event.target.previousElementSibling.focus()"
-        @onRight="$event.target.nextElementSibling.focus()"
-        @onDelete="deleteEntry(setIndex, fieldIndex + 1)"
+        @onDelete="deleteEntry(entryIdx, fieldIndex + 1)"
       />
     </fieldset>
   </form>
 </template>
 
 <script>
-import Entry from './Entry.vue';
+import Field from './Field.vue';
 
 export default {
   name: 'EntryList',
-  components: { Entry },
+  components: { Field },
   emits: ['onEvaluate'],
   data() {
     return {
       entryList: [
         {
+          sign: '+',
           days: '',
           hours: '',
           minutes: '',
@@ -44,12 +44,14 @@ export default {
   },
   methods: {
     confirm() {
+      const signHelper = { '+': 1, '-': -1 };
+      console.log(this.entryList);
       const sumUp = this.entryList.reduce(
         (acc, cur) => ({
-          days: +acc.days + +cur.days,
-          hours: +acc.hours + +cur.hours,
-          minutes: +acc.minutes + +cur.minutes,
-          seconds: +acc.seconds + +cur.seconds
+          days: +acc.days + +cur.days * signHelper[cur.sign],
+          hours: +acc.hours + +cur.hours * signHelper[cur.sign],
+          minutes: +acc.minutes + +cur.minutes * signHelper[cur.sign],
+          seconds: +acc.seconds + +cur.seconds * signHelper[cur.sign]
         }),
         {
           days: 0,
@@ -73,39 +75,77 @@ export default {
     deleteEntry(setIndex, fieldIndex) {
       if (this.entryList.length === 1) return;
 
-      if (setIndex === 0) this.moveCursor(setIndex - 1, fieldIndex, 'down');
-      else this.moveCursor(setIndex, fieldIndex, 'up');
+      if (setIndex === 0) this.changeLine(setIndex - 1, fieldIndex, 'down');
+      else this.changeLine(setIndex, fieldIndex, 'up');
 
       this.entryList.splice(setIndex, 1);
     },
-    moveCursor(setIndex, fieldIndex, direction) {
-      let shouldWait = false;
-      let newElIndex = (setIndex + (direction === 'down' ? 1 : -1)) * 5 + fieldIndex;
+    changeLine(direction, key) {
       const template = {
+        sign: '+',
         days: '',
         hours: '',
         minutes: '',
         seconds: ''
       };
+      const [fieldName, entryIdxStr] = key.split('-');
+      const entryIdx = +entryIdxStr;
 
-      if (direction === 'down' && setIndex === this.entryList.length - 1) {
-        this.entryList.push(template);
-        shouldWait = true;
+      const isLast = entryIdx === this.entryList.length - 1;
+      const isFirst = entryIdx === 0;
+      const movingDown = direction === 'down';
+      const movingUp = direction === 'up';
+
+      let shouldWait = false;
+      let targetId = '';
+
+      if (((isLast && movingDown) || (isFirst && movingUp)) && this.isEntryEmpty(entryIdx)) return;
+
+      if (movingDown) {
+        targetId = `#${fieldName}-${entryIdx + 1}`;
+        if (isLast) {
+          this.entryList.push(template);
+          shouldWait = true;
+        }
       }
 
-      if (direction === 'up' && setIndex === 0) {
-        this.entryList.unshift(template);
-        newElIndex = fieldIndex;
-        shouldWait = true;
+      if (movingUp) {
+        targetId = `#${fieldName}-${entryIdx - 1}`;
+        if (isFirst) {
+          targetId = `#${fieldName}-${entryIdx}`;
+          this.entryList.unshift(template);
+          shouldWait = true;
+        }
       }
 
       if (shouldWait) {
         this.$nextTick(() => {
-          this.$refs.entryListForm[newElIndex].focus();
+          this.$refs.entryListForm.querySelector(targetId).focus();
         });
       } else {
-        this.$refs.entryListForm[newElIndex].focus();
+        this.$refs.entryListForm.querySelector(targetId).focus();
       }
+    },
+    moveCursor(direction, event, key) {
+      switch (direction) {
+        case 'up':
+        case 'down':
+          this.changeLine(direction, key);
+          break;
+        case 'left':
+          event.target.previousElementSibling?.focus();
+          break;
+        case 'right':
+          event.target.nextElementSibling?.focus();
+          break;
+      }
+    },
+    setSign(sign, key) {
+      const idx = key.split('-')[1];
+      this.entryList[idx]['sign'] = sign;
+    },
+    isEntryEmpty(setIndex) {
+      return Object.values(this.entryList[setIndex]).join('').length === 1;
     }
   }
 };

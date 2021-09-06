@@ -36,7 +36,6 @@ export default {
   methods: {
     updateResult(totals) {
       let count = Object.values(totals).filter(el => el > 0).length;
-      console.log(totals, count);
 
       this.result = '';
       if (totals.days) {
@@ -98,7 +97,7 @@ h1 {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: minmax(min-content, max-content) 1fr minmax(min-content, max-content);
-  min-height: 100vh;  
+  min-height: 100vh;
 }
 
 .site-title {
@@ -113,6 +112,7 @@ h1 {
 .hbar {
   background-color: var(--darken-overlay);
   width: 80%;
+  max-width: 45rem;
   height: 0.5rem;
   border-radius: 0.5rem;
   margin: 0 auto;
