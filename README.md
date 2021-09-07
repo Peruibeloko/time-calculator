@@ -1,6 +1,6 @@
 # Time Calculator ⏳
 
-Ongoing little project, currently just adds up the entries in the list and displays the result in a simplified and humanized output.
+Ongoing little project to showcase the new TC39 proposal for a more standardized and robust Date & Time object, [Temporal](https://tc39.es/proposal-temporal/docs/). Currently just adds up the entries in the list and displays the result in a simplified and humanized output.
 
 ## Controls 🎮
 - `Ctrl + Left/Right/Up/Down Arrows` - Movement between fields, creates new entries as needed.

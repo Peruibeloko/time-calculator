@@ -4,24 +4,35 @@
       <h1 class="site-title">Time Calculator</h1>
     </header>
     <main>
-      <entry-list @onEvaluate="updateResult" />
+      <EntryList @onEvaluate="updateResult" />
       <div class="hbar"></div>
       <section>
         <h1 class="result" v-if="result">Thats {{ result }}</h1>
       </section>
     </main>
     <footer class="footer">
-      <a href="https://github.com/peruibeloko/time-calculator" class="source-link"
-        >Check the source here!</a
-      >
-      <span class="separator">·</span>
-      <a href="https://github.com/peruibeloko" class="source-link">Check my other projects here!</a>
+      <div class="line">
+        <a href="https://github.com/peruibeloko/time-calculator" class="source-link"
+          >Check the source here!</a
+        >
+        <span class="separator">·</span>
+        <a href="https://github.com/peruibeloko" class="source-link"
+          >Check my other projects here!</a
+        >
+      </div>
+      <div class="line">
+        <small
+          >Powered by the highly experimental, bleeding-edge,
+          <a href="https://tc39.es/proposal-temporal/docs/">Temporal Object</a>&nbsp;proposal by
+          TC39
+        </small>
+      </div>
     </footer>
   </div>
 </template>
 
 <script>
-import EntryList from './components/EntryList';
+import EntryList from './components/EntryList.vue';
 
 export default {
   name: 'App',
@@ -119,7 +130,15 @@ h1 {
 }
 
 .footer {
-  padding: 5rem;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.line {
+  padding: 0.5rem 0;
   display: flex;
   align-items: center;
   justify-content: center;

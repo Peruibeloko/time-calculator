@@ -2,15 +2,15 @@
   <form ref="entryListForm">
     <fieldset class="entry" v-for="(entry, entryIdx) in entryList" :key="entryIdx">
       <Field
-        :key="fieldName + '-' + entryIdx"
         :label="labels[fieldName]"
-        :fieldId="fieldName + '-' + entryIdx"
+        :key="`${fieldName}-${entryIdx}`"
+        :fieldId="`${fieldName}-${entryIdx}`"
         v-model="entryList[entryIdx][fieldName]"
-        v-for="(value, fieldName, fieldIndex) of entry"
+        v-for="(fieldValue, fieldName) of entry"
         @onSetSign="setSign($event, `${fieldName}-${entryIdx}`)"
         @onMove="moveCursor($event[0], $event[1], `${fieldName}-${entryIdx}`)"
-        @onEvaluate="confirm"
-        @onDelete="deleteEntry(entryIdx, fieldIndex + 1)"
+        @onEvaluate="evaluate"
+        @onDelete="deleteEntry(`${fieldName}-${entryIdx}`)"
       />
     </fieldset>
   </form>
@@ -18,6 +18,7 @@
 
 <script>
 import Field from './Field.vue';
+import { Temporal } from '@js-temporal/polyfill';
 
 export default {
   name: 'EntryList',
@@ -28,10 +29,10 @@ export default {
       entryList: [
         {
           sign: '+',
-          days: '',
-          hours: '',
-          minutes: '',
-          seconds: ''
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0
         }
       ],
       labels: {
@@ -43,50 +44,43 @@ export default {
     };
   },
   methods: {
-    confirm() {
-      const signHelper = { '+': 1, '-': -1 };
-      console.log(this.entryList);
-      const sumUp = this.entryList.reduce(
-        (acc, cur) => ({
-          days: +acc.days + +cur.days * signHelper[cur.sign],
-          hours: +acc.hours + +cur.hours * signHelper[cur.sign],
-          minutes: +acc.minutes + +cur.minutes * signHelper[cur.sign],
-          seconds: +acc.seconds + +cur.seconds * signHelper[cur.sign]
-        }),
-        {
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0
-        }
-      );
+    evaluate() {
+      let tally = new Temporal.Duration();
 
-      sumUp.minutes += Math.floor(sumUp.seconds / 60);
-      sumUp.seconds = sumUp.seconds % 60;
+      for (const entry of this.entryList) {
+        // eslint-disable-next-line no-unused-vars
+        const { sign, ...entryCleaned } = entry;
 
-      sumUp.hours += Math.floor(sumUp.minutes / 60);
-      sumUp.minutes = sumUp.minutes % 60;
+        if (entry.sign === '+') tally = tally.add(entryCleaned);
+        else tally = tally.subtract(entryCleaned);
 
-      sumUp.days += Math.floor(sumUp.hours / 24);
-      sumUp.hours = sumUp.hours % 24;
+        tally = tally.round({ largestUnit: 'day', smallestUnit: 'second' });
+      }
 
-      this.$emit('onEvaluate', sumUp);
+      const out = {};
+      out.days = tally.days;
+      out.hours = tally.hours;
+      out.minutes = tally.minutes;
+      out.seconds = tally.seconds;
+
+      this.$emit('onEvaluate', out);
     },
-    deleteEntry(setIndex, fieldIndex) {
+    deleteEntry(key) {
+      const [fieldName, entryIdxStr] = key.split('-');
       if (this.entryList.length === 1) return;
 
-      if (setIndex === 0) this.changeLine(setIndex - 1, fieldIndex, 'down');
-      else this.changeLine(setIndex, fieldIndex, 'up');
+      if (+entryIdxStr === 0) this.changeLine('down', `${fieldName}-${entryIdxStr + 1}`);
+      else this.changeLine('up', `${fieldName}-${entryIdxStr}`);
 
-      this.entryList.splice(setIndex, 1);
+      this.entryList.splice(entryIdxStr, 1);
     },
     changeLine(direction, key) {
       const template = {
         sign: '+',
-        days: '',
-        hours: '',
-        minutes: '',
-        seconds: ''
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0
       };
       const [fieldName, entryIdxStr] = key.split('-');
       const entryIdx = +entryIdxStr;
@@ -145,7 +139,9 @@ export default {
       this.entryList[idx]['sign'] = sign;
     },
     isEntryEmpty(setIndex) {
-      return Object.values(this.entryList[setIndex]).join('').length === 1;
+      // eslint-disable-next-line no-unused-vars
+      const { sign, ...entryData } = this.entryList[setIndex];
+      return Temporal.Duration.from(entryData).blank;
     }
   }
 };

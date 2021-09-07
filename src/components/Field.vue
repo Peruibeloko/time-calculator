@@ -2,15 +2,18 @@
   <input
     class="input"
     type="tel"
-    pattern="[0-9]+"
+    v-if="!isSign"
     :id="fieldId"
     :value="modelValue"
     :style="{ width: dynamicWidth }"
-    @input="$emit('update:modelValue', $event.target.value)"
+    @input="$emit('update:modelValue', +$event.target.value)"
     @keydown.exact="handleKeypress"
     @keydown.ctrl.exact="handleKeypress"
     @keydown.shift.exact="handleKeypress"
   />
+  <div class="sign" v-else>
+    {{ modelValue }}
+  </div>
   {{ label }}
 </template>
 
@@ -69,6 +72,9 @@ export default {
   computed: {
     dynamicWidth() {
       return this.modelValue.length > 3 ? `${this.modelValue.length + 0.5}rem` : '4rem';
+    },
+    isSign() {
+      return this.modelValue === '-' || this.modelValue === '+';
     }
   }
 };
@@ -89,6 +95,13 @@ export default {
   color: var(--light);
 
   transition-duration: 200ms;
+}
+
+.sign {
+  width: 2rem;
+  text-align: center;
+  font-size: 2rem;
+  color: var(--light);
 }
 
 input:hover,
