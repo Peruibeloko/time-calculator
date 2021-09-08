@@ -1,7 +1,7 @@
 <template>
   <form ref="entryListForm">
     <fieldset class="entry" v-for="(entry, entryIdx) in entryList" :key="entryIdx">
-      <Field
+      <field-wrapper
         :label="labels[fieldName]"
         :key="`${fieldName}-${entryIdx}`"
         :fieldId="`${fieldName}-${entryIdx}`"
@@ -16,13 +16,14 @@
   </form>
 </template>
 
-<script>
-import Field from './Field.vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { Temporal } from '@js-temporal/polyfill';
+import FieldWrapper from './Field.vue';
 
-export default {
+export default defineComponent({
   name: 'EntryList',
-  components: { Field },
+  components: { FieldWrapper },
   emits: ['onEvaluate'],
   data() {
     return {
@@ -36,6 +37,7 @@ export default {
         }
       ],
       labels: {
+        sign: '',
         days: 'days',
         hours: 'h',
         minutes: 'min',
@@ -57,16 +59,17 @@ export default {
         tally = tally.round({ largestUnit: 'day', smallestUnit: 'second' });
       }
 
-      const out = {};
-      out.days = tally.days;
-      out.hours = tally.hours;
-      out.minutes = tally.minutes;
-      out.seconds = tally.seconds;
+      const out = {
+        days: tally.days,
+        hours: tally.hours,
+        minutes: tally.minutes,
+        seconds: tally.seconds
+      };
 
       this.$emit('onEvaluate', out);
     },
-    deleteEntry(key) {
-      const [fieldName, entryIdxStr] = key.split('-');
+    deleteEntry(key: string) {
+      const [fieldName, entryIdxStr] = key.split('-') as [string, number];
       if (this.entryList.length === 1) return;
 
       if (+entryIdxStr === 0) this.changeLine('down', `${fieldName}-${entryIdxStr + 1}`);
@@ -74,7 +77,7 @@ export default {
 
       this.entryList.splice(entryIdxStr, 1);
     },
-    changeLine(direction, key) {
+    changeLine(direction: string, key: string) {
       const template = {
         sign: '+',
         days: 0,
@@ -112,39 +115,40 @@ export default {
         }
       }
 
+      const entryListForm = this.$refs.entryListForm as HTMLFormElement;
       if (shouldWait) {
         this.$nextTick(() => {
-          this.$refs.entryListForm.querySelector(targetId).focus();
+          (entryListForm.querySelector(targetId) as HTMLElement).focus();
         });
       } else {
-        this.$refs.entryListForm.querySelector(targetId).focus();
+        (entryListForm.querySelector(targetId) as HTMLElement).focus();
       }
     },
-    moveCursor(direction, event, key) {
+    moveCursor(direction: string, event: Event, key: string) {
       switch (direction) {
         case 'up':
         case 'down':
           this.changeLine(direction, key);
           break;
         case 'left':
-          event.target.previousElementSibling?.focus();
+          ((event.target as HTMLElement).previousElementSibling as HTMLElement).focus();
           break;
         case 'right':
-          event.target.nextElementSibling?.focus();
+          ((event.target as HTMLElement).previousElementSibling as HTMLElement).focus();
           break;
       }
     },
-    setSign(sign, key) {
-      const idx = key.split('-')[1];
+    setSign(sign: string, key: string) {
+      const idx = parseInt(key.split('-')[1]);
       this.entryList[idx]['sign'] = sign;
     },
-    isEntryEmpty(setIndex) {
+    isEntryEmpty(setIndex: number) {
       // eslint-disable-next-line no-unused-vars
       const { sign, ...entryData } = this.entryList[setIndex];
       return Temporal.Duration.from(entryData).blank;
     }
   }
-};
+});
 </script>
 
 <style scoped>

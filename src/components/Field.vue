@@ -6,7 +6,7 @@
     :id="fieldId"
     :value="modelValue"
     :style="{ width: dynamicWidth }"
-    @input="$emit('update:modelValue', +$event.target.value)"
+    @input="handleInput"
     @keydown.exact="handleKeypress"
     @keydown.ctrl.exact="handleKeypress"
     @keydown.shift.exact="handleKeypress"
@@ -17,17 +17,22 @@
   {{ label }}
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
   name: 'Field',
   props: {
     label: String,
-    modelValue: String,
+    modelValue: null,
     fieldId: String
   },
   emits: ['onMove', 'onEvaluate', 'onDelete', 'onSetSign', 'update:modelValue'],
   methods: {
-    handleKeypress(evt) {
+    handleInput(evt: Event) {
+      this.$emit('update:modelValue', +(evt.target as HTMLInputElement).value);
+    },
+    handleKeypress(evt: KeyboardEvent) {
       const switchVar = `${evt.ctrlKey ? 'Ctrl ' : ''}${evt.key}`;
       switch (switchVar) {
         case '+':
@@ -71,13 +76,15 @@ export default {
   },
   computed: {
     dynamicWidth() {
-      return this.modelValue.length > 3 ? `${this.modelValue.length + 0.5}rem` : '4rem';
+      return this.modelValue && this.modelValue.length > 3
+        ? `${this.modelValue.length + 0.5}rem`
+        : '4rem';
     },
     isSign() {
       return this.modelValue === '-' || this.modelValue === '+';
     }
   }
-};
+});
 </script>
 
 <style scoped>

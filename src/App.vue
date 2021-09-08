@@ -4,7 +4,7 @@
       <h1 class="site-title">Time Calculator</h1>
     </header>
     <main>
-      <EntryList @onEvaluate="updateResult" />
+      <entry-list @onEvaluate="updateResult" />
       <div class="hbar"></div>
       <section>
         <h1 class="result" v-if="result">Thats {{ result }}</h1>
@@ -23,18 +23,26 @@
       <div class="line">
         <small
           >Powered by the highly experimental, bleeding-edge,
-          <a href="https://tc39.es/proposal-temporal/docs/">Temporal Object</a>&nbsp;proposal by
-          TC39
+          <a href="https://tc39.es/proposal-temporal/docs/" class="source-link">Temporal Object</a
+          >&nbsp;proposal by TC39
         </small>
       </div>
     </footer>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import EntryList from './components/EntryList.vue';
 
-export default {
+interface InputObject {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export default defineComponent({
   name: 'App',
   components: {
     EntryList
@@ -45,7 +53,7 @@ export default {
     };
   },
   methods: {
-    updateResult(totals) {
+    updateResult(totals: InputObject) {
       let count = Object.values(totals).filter(el => el > 0).length;
 
       this.result = '';
@@ -76,7 +84,7 @@ export default {
       }
     }
   }
-};
+});
 </script>
 
 <style>
