@@ -1,7 +1,7 @@
 <template>
   <form ref="entryListForm">
     <fieldset class="entry" v-for="(entry, entryIdx) in entryList" :key="entryIdx">
-      <field-wrapper
+      <FieldWrapper
         :label="labels[fieldName]"
         :key="`${fieldName}-${entryIdx}`"
         :fieldId="`${fieldName}-${entryIdx}`"
@@ -19,7 +19,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { Temporal } from '@js-temporal/polyfill';
-import FieldWrapper from './Field.vue';
+import FieldWrapper from './FieldWrapper.vue';
 
 export default defineComponent({
   name: 'EntryList',

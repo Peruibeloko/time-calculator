@@ -4,7 +4,7 @@
       <h1 class="site-title">Time Calculator</h1>
     </header>
     <main>
-      <entry-list @onEvaluate="updateResult" />
+      <EntryList @onEvaluate="updateResult" />
       <div class="hbar"></div>
       <section>
         <h1 class="result" v-if="result">Thats {{ result }}</h1>

@@ -21,7 +21,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'Field',
+  name: 'FieldWrapper',
   props: {
     label: String,
     modelValue: null,
