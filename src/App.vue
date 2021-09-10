@@ -93,6 +93,7 @@ export default defineComponent({
 :root {
   --dark: hsl(0, 0%, 10%);
   --light: hsl(41, 100%, 89%);
+  --darker-light: hsl(41, 100%, 69%);
   --darken-overlay: rgba(0, 0, 0, 0.4);
 }
 
@@ -154,6 +155,10 @@ h1 {
 
 .source-link {
   color: var(--light);
+}
+
+.source-link:visited {
+  color: var(--darker-light);
 }
 
 .separator {
