@@ -1,16 +1,17 @@
 <template>
   <form ref="entryListForm">
-    <fieldset class="entry" v-for="(entry, entryIdx) in entryList" :key="entryIdx">
-      <FieldWrapper
-        :label="labels[fieldName]"
-        :key="`${fieldName}-${entryIdx}`"
-        :fieldId="`${fieldName}-${entryIdx}`"
-        v-model="entryList[entryIdx][fieldName]"
-        v-for="(fieldValue, fieldName) of entry"
-        @onSetSign="setSign($event, `${fieldName}-${entryIdx}`)"
-        @onMove="moveCursor($event[0], $event[1], `${fieldName}-${entryIdx}`)"
+    <fieldset
+      class="entry"
+      v-for="(entry, entryIdx) in entryList"
+      :key="entryIdx"
+    >
+      <TimeEntry
+        v-model="entryList[entryIdx]"
+        :initialEntry="entry"
+        :index="entryIdx"
+        :key="entryIdx"
         @onEvaluate="evaluate"
-        @onDelete="deleteEntry(`${fieldName}-${entryIdx}`)"
+        @changeLine="changeLine"
       />
     </fieldset>
   </form>
@@ -18,12 +19,16 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+
 import { Temporal } from '@js-temporal/polyfill';
-import FieldWrapper from './FieldWrapper.vue';
+
+import Entry from '../typings/Entry';
+
+import TimeEntry from './TimeEntry.vue';
 
 export default defineComponent({
   name: 'EntryList',
-  components: { FieldWrapper },
+  components: { TimeEntry },
   emits: ['onEvaluate'],
   data() {
     return {
@@ -35,14 +40,7 @@ export default defineComponent({
           minutes: 0,
           seconds: 0
         }
-      ],
-      labels: {
-        sign: '',
-        days: 'days',
-        hours: 'h',
-        minutes: 'min',
-        seconds: 's'
-      }
+      ] as Entry[]
     };
   },
   methods: {
@@ -68,25 +66,22 @@ export default defineComponent({
 
       this.$emit('onEvaluate', out);
     },
-    deleteEntry(key: string) {
-      const [fieldName, entryIdxStr] = key.split('-') as [string, number];
+    deleteEntry(fieldName: string, entryIdxStr: number) {
       if (this.entryList.length === 1) return;
 
-      if (+entryIdxStr === 0) this.changeLine('down', `${fieldName}-${entryIdxStr + 1}`);
-      else this.changeLine('up', `${fieldName}-${entryIdxStr}`);
+      if (+entryIdxStr === 0) this.changeLine('down', fieldName, entryIdxStr + 1);
+      else this.changeLine('up', fieldName, entryIdxStr);
 
       this.entryList.splice(entryIdxStr, 1);
     },
-    changeLine(direction: string, key: string) {
-      const template = {
+    changeLine(direction: string, fieldName: string, entryIdx: number) {
+      const template: Entry = {
         sign: '+',
         days: 0,
         hours: 0,
         minutes: 0,
         seconds: 0
       };
-      const [fieldName, entryIdxStr] = key.split('-');
-      const entryIdx = +entryIdxStr;
 
       const isLast = entryIdx === this.entryList.length - 1;
       const isFirst = entryIdx === 0;
@@ -123,24 +118,6 @@ export default defineComponent({
       } else {
         (entryListForm.querySelector(targetId) as HTMLElement).focus();
       }
-    },
-    moveCursor(direction: string, event: Event, key: string) {
-      switch (direction) {
-        case 'up':
-        case 'down':
-          this.changeLine(direction, key);
-          break;
-        case 'left':
-          ((event.target as HTMLElement).previousElementSibling as HTMLElement).focus();
-          break;
-        case 'right':
-          ((event.target as HTMLElement).previousElementSibling as HTMLElement).focus();
-          break;
-      }
-    },
-    setSign(sign: string, key: string) {
-      const idx = parseInt(key.split('-')[1]);
-      this.entryList[idx]['sign'] = sign;
     },
     isEntryEmpty(setIndex: number) {
       // eslint-disable-next-line no-unused-vars

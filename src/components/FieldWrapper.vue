@@ -4,8 +4,8 @@
     type="tel"
     v-if="!isSign"
     :id="fieldId"
-    :value="modelValue"
     :style="{ width: dynamicWidth }"
+    :value="modelValue"
     @input="handleInput"
     @keydown.exact="handleKeypress"
     @keydown.ctrl.exact="handleKeypress"
@@ -35,31 +35,22 @@ export default defineComponent({
     handleKeypress(evt: KeyboardEvent) {
       const switchVar = `${evt.ctrlKey ? 'Ctrl ' : ''}${evt.key}`;
       switch (switchVar) {
-        case '+':
-          evt.preventDefault();
-          this.$emit('onSetSign', '+');
-          break;
-        case '-':
-          evt.preventDefault();
-          this.$emit('onSetSign', '-');
-          break;
-        case 'Ctrl ArrowUp':
-          this.$emit('onMove', ['up', evt]);
-          break;
-        case 'Ctrl ArrowDown':
-          this.$emit('onMove', ['down', evt]);
-          break;
-        case 'Ctrl ArrowLeft':
-          this.$emit('onMove', ['left', evt]);
-          break;
-        case 'Ctrl ArrowRight':
-          this.$emit('onMove', ['right', evt]);
-          break;
         case 'Ctrl Enter':
           this.$emit('onEvaluate');
           break;
         case 'Ctrl Delete':
           this.$emit('onDelete');
+          break;
+        case '+':
+        case '-':
+          evt.preventDefault();
+          this.$emit('onSetSign', evt.key);
+          break;
+        case 'Ctrl ArrowUp':
+        case 'Ctrl ArrowDown':
+        case 'Ctrl ArrowLeft':
+        case 'Ctrl ArrowRight':
+          this.$emit('onMove', [evt, evt.key.toLowerCase().replace('arrow', '')]);
           break;
         case 'Ctrl a':
         case 'Tab':
