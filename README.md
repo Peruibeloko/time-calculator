@@ -9,10 +9,17 @@ Ongoing little project to showcase the new TC39 proposal for a more standardized
 - `Ctrl + Delete` - Removes the currently selected entry from the list
 
 ## Project Setup 🔧
-This project uses pnpm as its preferred package managing tool, which is a drop-in alternative to npm, so usual procedures follow:
+Uses NPM/PNPM, so usual procedures follow:
+
 ```
-pnpm i
-pnpm serve
+npm i
+npm run dev
+```
+
+And to build for production
+
+```
+npm run build
 ```
 
 ## Roadmap 🗺
