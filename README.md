@@ -28,8 +28,8 @@ What should you expect?
 - Basic functionality
   - [x] Add
   - [x] Subtract
-  - [x] Per-entry basis
 - [x] Don't allow flooding of empty entries (must use an entry before adding a new one)
+- [ ] Modal for controls
 - [ ] Mobile layout
 - [ ] Clickable Handles for adding entries
 - [ ] Reorderable entries
