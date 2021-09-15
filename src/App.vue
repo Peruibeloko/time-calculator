@@ -1,7 +1,10 @@
 <template>
+  <ControlsModal :isOpen="isModalOpen" @closeModal="isModalOpen = false" />
   <div class="container">
     <header class="centered">
-      <h1 class="site-title">Time Calculator</h1>
+      <h1 class="site-title">
+        Time Calculator <span class="info" @click="isModalOpen = true">ⓘ</span>
+      </h1>
     </header>
     <main>
       <EntryList @onEvaluate="updateResult" />
@@ -34,6 +37,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import EntryList from './components/EntryList.vue';
+import ControlsModal from './components/ControlsModal.vue';
 
 interface InputObject {
   days: number;
@@ -45,10 +49,12 @@ interface InputObject {
 export default defineComponent({
   name: 'App',
   components: {
-    EntryList
+    EntryList,
+    ControlsModal
   },
   data() {
     return {
+      isModalOpen: false,
       result: ''
     };
   },
@@ -164,5 +170,11 @@ h1 {
 .separator {
   padding: 0 1rem;
   font-size: 2rem;
+}
+
+.info {
+  font-size: medium;
+  vertical-align: super;
+  cursor: pointer;
 }
 </style>
