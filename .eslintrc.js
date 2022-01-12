@@ -1,17 +1,20 @@
 module.exports = {
   extends: 'eslint:recommended',
-  root: true,
+  plugins: ['plugin:vue/vue3-recommended', 'eslint:recommended'],
   env: {
-    browser: true,
-    es6: true
-  },
-  extends: ['plugin:vue/vue3-essential', 'eslint:recommended', '@vue/prettier'],
-  parserOptions: {
-    parser: 'babel-eslint'
+    es2021: true,
+    browser: true
   },
   rules: {
     'arrow-parens': ['warn', 'as-needed'],
     'comma-dangle': ['warn', 'never'],
-    quotes: ['warn', 'single']
+    quotes: ['warn', 'single'],
+    'no-unused-vars': [
+      'error',
+      {
+        varsIgnorePattern: '^_',
+        argsIgnorePattern: '^_'
+      }
+    ]
   }
 };
