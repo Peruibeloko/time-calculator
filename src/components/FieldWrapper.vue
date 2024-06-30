@@ -17,64 +17,62 @@
   {{ label }}
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 
-export default defineComponent({
-  name: 'FieldWrapper',
-  props: {
-    label: String,
-    modelValue: null,
-    fieldId: String
-  },
-  emits: ['onMove', 'onEvaluate', 'onDelete', 'onSetSign', 'update:modelValue'],
-  methods: {
-    handleInput(evt: Event) {
-      this.$emit('update:modelValue', +(evt.target as HTMLInputElement).value);
-    },
-    handleKeypress(evt: KeyboardEvent) {
-      const switchVar = `${evt.ctrlKey ? 'Ctrl ' : ''}${evt.key}`;
-      switch (switchVar) {
-        case 'Ctrl Enter':
-          this.$emit('onEvaluate');
-          break;
-        case 'Ctrl Delete':
-          this.$emit('onDelete');
-          break;
-        case '+':
-        case '-':
-          evt.preventDefault();
-          this.$emit('onSetSign', evt.key);
-          break;
-        case 'Ctrl ArrowUp':
-        case 'Ctrl ArrowDown':
-        case 'Ctrl ArrowLeft':
-        case 'Ctrl ArrowRight':
-          this.$emit('onMove', [evt, evt.key.toLowerCase().replace('arrow', '')]);
-          break;
-        case 'Ctrl a':
-        case 'Tab':
-        case 'Backspace':
-        case 'Delete':
-        case 'Home':
-        case 'End':
-          break;
-        default:
-          if (/[^0-9]/.test(evt.key)) evt.preventDefault();
-          else break;
-      }
-    }
-  },
-  computed: {
-    dynamicWidth() {
-      return this.modelValue && this.modelValue.length > 3
-        ? `${this.modelValue.length + 0.5}rem`
-        : '4rem';
-    },
-    isSign() {
-      return this.modelValue === '-' || this.modelValue === '+';
-    }
+interface Props {
+  label: string;
+  modelValue: string | number;
+  fieldId: string;
+}
+
+const { fieldId, label, modelValue: inputValue } = defineProps<Props>();
+const modelValue = inputValue.toString();
+
+const emit = defineEmits(['onMove', 'onEvaluate', 'onDelete', 'onSetSign', 'update:modelValue']);
+
+const handleInput = (evt: Event) => {
+  emit('update:modelValue', +(evt.target as HTMLInputElement).value);
+};
+
+const handleKeypress = (evt: KeyboardEvent) => {
+  const switchVar = `${evt.ctrlKey ? 'Ctrl ' : ''}${evt.key}`;
+  switch (switchVar) {
+    case 'Ctrl Enter':
+      emit('onEvaluate');
+      break;
+    case 'Ctrl Delete':
+      emit('onDelete');
+      break;
+    case '+':
+    case '-':
+      evt.preventDefault();
+      emit('onSetSign', evt.key);
+      break;
+    case 'Ctrl ArrowUp':
+    case 'Ctrl ArrowDown':
+    case 'Ctrl ArrowLeft':
+    case 'Ctrl ArrowRight':
+      emit('onMove', [evt, evt.key.toLowerCase().replace('arrow', '')]);
+      break;
+    case 'Ctrl a':
+    case 'Tab':
+    case 'Backspace':
+    case 'Delete':
+    case 'Home':
+    case 'End':
+      break;
+    default:
+      if (/[^0-9]/.test(evt.key)) evt.preventDefault();
+      else break;
   }
+};
+
+const dynamicWidth = computed(() => {
+  return modelValue && modelValue.length > 3 ? `${modelValue.length + 0.5}rem` : '4rem';
+});
+const isSign = computed(() => {
+  return modelValue === '-' || modelValue === '+';
 });
 </script>
 

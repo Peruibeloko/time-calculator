@@ -10,7 +10,7 @@
       <EntryList @onEvaluate="updateResult" />
       <div class="hbar"></div>
       <section>
-        <h1 class="result" v-if="result">Thats {{ result }}</h1>
+        <h1 class="result.value" v-if="result">Thats {{ result }}</h1>
       </section>
     </main>
     <footer class="footer">
@@ -34,10 +34,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
 import EntryList from './components/EntryList.vue';
 import ControlsModal from './components/ControlsModal.vue';
+import { ref } from 'vue';
 
 interface InputObject {
   days: number;
@@ -46,51 +46,39 @@ interface InputObject {
   seconds: number;
 }
 
-export default defineComponent({
-  name: 'App',
-  components: {
-    EntryList,
-    ControlsModal
-  },
-  data() {
-    return {
-      isModalOpen: false,
-      result: ''
-    };
-  },
-  methods: {
-    updateResult(totals: InputObject) {
-      let count = Object.values(totals).filter(el => el > 0).length;
+const isModalOpen = ref(false);
+const result = ref('');
 
-      this.result = '';
-      if (totals.days) {
-        count--;
-        this.result += totals.days + ' days';
-        if (count == 1) this.result += ' and';
-        else if (count > 1) this.result += ',';
-      }
+const updateResult = (totals: InputObject) => {
+  let count = Object.values(totals).filter(el => el > 0).length;
 
-      if (totals.hours) {
-        count--;
-        this.result += ' ' + totals.hours + ' hours';
-        if (count == 1) this.result += ' and';
-        else if (count > 1) this.result += ',';
-      }
-
-      if (totals.minutes) {
-        count--;
-        this.result += ' ' + totals.minutes + ' minutes';
-        if (count == 1) this.result += ' and';
-        else if (count > 1) this.result += ',';
-      }
-
-      if (totals.seconds) {
-        count--;
-        this.result += ' ' + totals.seconds + ' seconds';
-      }
-    }
+  result.value = '';
+  if (totals.days) {
+    count--;
+    result.value += totals.days + ' days';
+    if (count == 1) result.value += ' and';
+    else if (count > 1) result.value += ',';
   }
-});
+
+  if (totals.hours) {
+    count--;
+    result.value += ' ' + totals.hours + ' hours';
+    if (count == 1) result.value += ' and';
+    else if (count > 1) result.value += ',';
+  }
+
+  if (totals.minutes) {
+    count--;
+    result.value += ' ' + totals.minutes + ' minutes';
+    if (count == 1) result.value += ' and';
+    else if (count > 1) result.value += ',';
+  }
+
+  if (totals.seconds) {
+    count--;
+    result.value += ' ' + totals.seconds + ' seconds';
+  }
+};
 </script>
 
 <style>
@@ -131,7 +119,7 @@ h1 {
   font-size: 3rem;
 }
 
-.result {
+.result.value {
   padding: 2rem 0;
 }
 

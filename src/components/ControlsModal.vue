@@ -37,19 +37,13 @@
     </transition>
   </teleport>
 </template>
-<script lang="ts">
-import { defineComponent } from 'vue';
-export default defineComponent({
-  name: 'ModalBase',
-  props: {
-    isOpen: {
-      type: Boolean,
-      required: true,
-      default: false
-    }
-  },
-  emits: ['closeModal']
-});
+<script setup lang="ts">
+interface Props {
+  isOpen: boolean;
+}
+
+const emit = defineEmits(['closeModal']);
+const { isOpen = false } = defineProps<Props>();
 </script>
 
 <style scoped>
